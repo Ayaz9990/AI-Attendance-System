@@ -2,5 +2,4 @@ Flask
 flask-cors
 numpy
 opencv-python-headless
-face-recognition
 gunicorn
