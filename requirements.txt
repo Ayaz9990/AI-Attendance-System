@@ -1,6 +1,7 @@
 Flask
-flask-cors
+Flask-Cors
 Flask-SQLAlchemy
+Flask-JWT-Extended
 numpy
 opencv-python-headless
 gunicorn
