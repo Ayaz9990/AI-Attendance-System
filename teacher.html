@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Teacher Dashboard</title>
+
+    <style>
+
+        body
+        {
+            background: #111;
+            color: white;
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        .container
+        {
+            width: 400px;
+            margin: auto;
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        h2
+        {
+            text-align: center;
+        }
+
+        select, button
+        {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        button
+        {
+            background: #00c6ff;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover
+        {
+            background: #0096c7;
+        }
+
+        #status
+        {
+            margin-top: 10px;
+            text-align: center;
+            color: lightgreen;
+        }
+
+        .logout
+        {
+            background: red;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h2>Teacher Dashboard</h2>
+
+    <label>Year</label>
+
+    <select id="year">
+
+        <option value="FE">FE</option>
+
+        <option value="SE">SE</option>
+
+        <option value="TE">TE</option>
+
+        <option value="BE">BE</option>
+
+    </select>
+
+
+    <label>Department</label>
+
+    <select id="department">
+
+        <option value="Computer">Computer</option>
+
+        <option value="AIDS">AIDS</option>
+
+        <option value="Mechanical">Mechanical</option>
+
+        <option value="Civil">Civil</option>
+
+        <option value="Electrical">Electrical</option>
+
+    </select>
+
+
+    <label>Subject</label>
+
+    <select id="subject">
+    </select>
+
+
+    <button onclick="startAttendance()">
+
+        Start Attendance
+
+    </button>
+
+
+    <button class="logout" onclick="logout()">
+
+        Logout
+
+    </button>
+
+
+    <div id="status"></div>
+
+
+</div>
+
+
+
+<script>
+
+const API = "http://127.0.0.1:5000";
+
+const teacher = JSON.parse(localStorage.getItem("user"));
+
+const teacherId = teacher.id;
+
+const subjectDropdown = document.getElementById("subject");
+
+
+
+async function loadSubjects()
+{
+
+    const response = await fetch(API + "/teacher-subjects/" + teacherId);
+
+    const subjects = await response.json();
+
+    subjectDropdown.innerHTML = "";
+
+    subjects.forEach(subject =>
+    {
+
+        const option = document.createElement("option");
+
+        option.value = subject.subject_id;
+
+        option.text =
+            subject.name +
+            " (" +
+            subject.year +
+            " - " +
+            subject.department +
+            ")";
+
+        subjectDropdown.appendChild(option);
+
+    });
+
+}
+
+
+
+async function startAttendance()
+{
+
+    const year =
+        document.getElementById("year").value;
+
+    const department =
+        document.getElementById("department").value;
+
+    const subjectId =
+        subjectDropdown.value;
+
+
+    const response = await fetch(API + "/start-attendance",
+    {
+        method: "POST",
+
+        headers:
+        {
+            "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify(
+        {
+            teacher_id: teacherId,
+            subject_id: subjectId,
+            year: year,
+            department: department
+        })
+
+    });
+
+
+    const data = await response.json();
+
+    document.getElementById("status").innerText =
+        "Attendance Started. Session ID: " +
+        data.session_id;
+
+}
+
+
+
+function logout()
+{
+
+    localStorage.clear();
+
+    window.location = "login.html";
+
+}
+
+
+
+loadSubjects();
+
+</script>
+
+</body>
+</html>
